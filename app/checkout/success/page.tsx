@@ -1,16 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const orderId = searchParams?.get('orderId');
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -36,5 +38,13 @@ export default function OrderSuccessPage() {
         <p className="text-sm text-gray-400 mt-4">Redirecting in {countdown} seconds...</p>
       </div>
     </div>
+  );
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <OrderSuccessContent />
+    </Suspense>
   );
 }
