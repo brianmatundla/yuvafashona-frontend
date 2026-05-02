@@ -1,18 +1,6 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: 'placehold.co' },
-      { protocol: 'https', hostname: 'randomuser.me' },
-    ],
-  },
+module.exports = {
+  // ... other config
   output: 'standalone',
-  eslint: { ignoreDuringBuilds: true },
-  typescript: { ignoreBuildErrors: true },
-  // Disable static prerendering for dynamic routes
-  trailingSlash: false,
-  skipTrailingSlashRedirect: true,
+  trailingSlash: true,
+  distDir: '.next',
 };
-
-export default nextConfig;
