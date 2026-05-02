@@ -4,6 +4,22 @@
 
 @layer base {
   body {
-    @apply bg-background text-dark;
+    background-color: #FDFBF7;
+    color: #1A1A1A;
+  }
+}
+
+@layer utilities {
+  .bg-background {
+    background-color: #FDFBF7;
+  }
+  .bg-dark {
+    background-color: #1A1A1A;
+  }
+  .text-gold {
+    color: #C8A97E;
+  }
+  .bg-gold {
+    background-color: #C8A97E;
   }
 }
