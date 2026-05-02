@@ -1,14 +1,14 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-function OrderSuccessContent() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const orderId = searchParams?.get('orderId');
   const [countdown, setCountdown] = useState(5);
+  const orderId = searchParams?.get('orderId');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -44,7 +44,7 @@ function OrderSuccessContent() {
 export default function OrderSuccessPage() {
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
-      <OrderSuccessContent />
+      <SuccessContent />
     </Suspense>
   );
 }
