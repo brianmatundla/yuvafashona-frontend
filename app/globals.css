@@ -7,24 +7,3 @@
     @apply bg-background text-dark;
   }
 }
-
-@layer utilities {
-  .bg-background {
-    background-color: #FDFBF7;
-  }
-  .bg-dark {
-    background-color: #1A1A1A;
-  }
-  .text-gold {
-    color: #C8A97E;
-  }
-  .bg-gold {
-    background-color: #C8A97E;
-  }
-  .bg-goldDark {
-    background-color: #B8965E;
-  }
-  .bg-accent {
-    background-color: #2C4C3B;
-  }
-}
