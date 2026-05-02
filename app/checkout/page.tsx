@@ -1,30 +1,48 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatPrice } from '@/lib/utils';
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter();
   const { user } = useAuth();
   const { items, totalPrice, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: user?.full_name || '',
-    email: user?.email || '',
+    fullName: '',
+    email: '',
     phone: '',
     address: '',
     city: '',
     paymentMethod: 'cod'
   });
 
+  useEffect(() => {
+    setMounted(true);
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: user.full_name || '',
+        email: user.email || ''
+      }));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (items.length === 0) {
+      router.push('/cart');
+    }
+  }, [items, router, mounted]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate order processing
     setTimeout(() => {
       const order = {
         id: Date.now(),
@@ -35,7 +53,6 @@ export default function CheckoutPage() {
         createdAt: new Date().toISOString()
       };
       
-      // Save order to localStorage (will connect to backend later)
       const orders = JSON.parse(localStorage.getItem('orders') || '[]');
       orders.push(order);
       localStorage.setItem('orders', JSON.stringify(orders));
@@ -45,8 +62,11 @@ export default function CheckoutPage() {
     }, 1500);
   };
 
+  if (!mounted) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
   if (items.length === 0) {
-    router.push('/cart');
     return null;
   }
 
@@ -56,7 +76,6 @@ export default function CheckoutPage() {
         <h1 className="text-3xl font-bold mb-8">Checkout</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Checkout Form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-4">Shipping Information</h2>
@@ -130,10 +149,6 @@ export default function CheckoutPage() {
                       />
                       <span>💵 Cash on Delivery</span>
                     </label>
-                    <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer opacity-50">
-                      <input type="radio" disabled />
-                      <span>💳 Card Payment (Coming Soon)</span>
-                    </label>
                   </div>
                 </div>
               </div>
@@ -148,14 +163,13 @@ export default function CheckoutPage() {
             </form>
           </div>
           
-          {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow p-6 sticky top-24">
               <h2 className="text-xl font-bold mb-4">Order Summary</h2>
               
               <div className="space-y-2 max-h-80 overflow-y-auto mb-4">
-                {items.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm">
+                {items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between text-sm">
                     <span>{item.name} x{item.quantity}</span>
                     <span>{formatPrice(item.price * item.quantity)}</span>
                   </div>
@@ -181,5 +195,13 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }
